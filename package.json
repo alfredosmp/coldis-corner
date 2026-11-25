@@ -1,7 +1,7 @@
 {
   "name": "coldi-derecho",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Coldi's Corner — Biblioteca digital, apuntes, flashcards, calendario y glosario de estudio",
   "author": "Coldi's Corner",
   "type": "module",

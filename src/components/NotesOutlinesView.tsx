@@ -901,8 +901,9 @@ export function NotesOutlinesView({
         <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 overflow-hidden">
           {/* Left Half: Embedded Book Pane (with PDF Highlighter!) */}
           {isRichDoc && splitBookOpen && currentSplitBook && (
-            <div className="lg:w-1/2 h-[45%] lg:h-full min-w-0 min-h-0">
+            <div className="lg:w-1/2 h-[48%] min-h-[260px] lg:h-full min-w-0 flex flex-col">
               <EmbeddedBookPane
+                key={currentSplitBook.id}
                 book={currentSplitBook}
                 glossary={glossary}
                 defaultGlossaryMarks={glossaryUnderlinesDefault}

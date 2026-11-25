@@ -21,6 +21,7 @@ import {
   loadDocxSections,
   loadEpubDocument,
   pdfjsLib,
+  toFreshUint8Array,
   type ParsedSection,
 } from '../services/documentParser';
 import { buildSnippet, tokenizeQuery } from '../services/searchEngine';
@@ -121,10 +122,12 @@ export function BookReaderView({
   // Document loaded states
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [pdfDocVersion, setPdfDocVersion] = useState(0);
   const [sections, setSections] = useState<ParsedSection[]>([]);
   const [bookChunks, setBookChunks] = useState<BookTextChunk[]>([]);
 
   const pdfDocRef = useRef<pdfjsLib.PDFDocumentProxy | null>(null);
+  const loadingTaskRef = useRef<pdfjsLib.PDFDocumentLoadingTask | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const renderTaskRef = useRef<pdfjsLib.RenderTask | null>(null);
   const notesAreaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -158,16 +161,19 @@ export function BookReaderView({
 
         if (book.format === 'pdf') {
           const loadingTask = pdfjsLib.getDocument({
-            data: new Uint8Array(blobRecord.data.slice(0)),
+            data: toFreshUint8Array(blobRecord.data),
+            useSystemFonts: true,
           });
+          loadingTaskRef.current = loadingTask;
           const pdfDoc = await loadingTask.promise;
           if (cancelled) {
-            await pdfDoc.cleanup();
+            await loadingTask.destroy().catch(() => {});
             return;
           }
           pdfDocRef.current = pdfDoc;
           setTotalLocations(pdfDoc.numPages);
           setLoading(false);
+          setPdfDocVersion((v) => v + 1);
         } else if (book.format === 'docx') {
           const parsed = await loadDocxSections(blobRecord.data);
           if (cancelled) return;
@@ -201,69 +207,110 @@ export function BookReaderView({
         } catch {
           // ignore
         }
+        renderTaskRef.current = null;
       }
-      if (pdfDocRef.current) {
-        pdfDocRef.current.cleanup();
-        pdfDocRef.current = null;
+      pdfDocRef.current = null;
+      if (loadingTaskRef.current) {
+        loadingTaskRef.current.destroy().catch(() => {});
+        loadingTaskRef.current = null;
       }
     };
   }, [book.id, book.format]);
 
-  // Render current PDF page onto high-DPI canvas + detect glossary hits
+  // Render current PDF page onto an isolated offscreen canvas first (prevents PDF.js v6 canvas conflicts & blank frames)
   useEffect(() => {
-    if (book.format !== 'pdf' || loading || !pdfDocRef.current || !canvasRef.current) return;
+    if (book.format !== 'pdf' || loading || pdfDocVersion === 0 || !pdfDocRef.current) return;
 
     let cancelled = false;
+    let activeTask: pdfjsLib.RenderTask | null = null;
+
     async function renderPdfPage() {
       const pdfDoc = pdfDocRef.current;
-      const canvas = canvasRef.current;
-      if (!pdfDoc || !canvas) return;
+      if (!pdfDoc) return;
 
-      if (renderTaskRef.current) {
-        try {
-          renderTaskRef.current.cancel();
-        } catch {
-          // ignore
-        }
-      }
-
-      const safePage = Math.max(1, Math.min(pdfDoc.numPages, location));
-      const page = await pdfDoc.getPage(safePage);
-      if (cancelled) return;
-
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const viewport = page.getViewport({ scale: pdfZoom * dpr });
-      const displayViewport = page.getViewport({ scale: pdfZoom });
-
-      canvas.width = Math.floor(viewport.width);
-      canvas.height = Math.floor(viewport.height);
-      canvas.style.width = `${Math.floor(displayViewport.width)}px`;
-      canvas.style.height = `${Math.floor(displayViewport.height)}px`;
-
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      const task = page.render({ canvas, canvasContext: ctx, viewport });
-      renderTaskRef.current = task;
       try {
-        await task.promise;
-      } catch {
-        // Cancelled on rapid page flip
-      }
+        const safePage = Math.max(1, Math.min(pdfDoc.numPages, location));
+        const page = await pdfDoc.getPage(safePage);
+        if (cancelled) return;
 
-      if (!cancelled && glossaryMarksOn) {
-        const hits = await extractPdfGlossaryHits(page, glossary);
-        if (!cancelled) setPdfGlossaryHits(hits);
-      } else if (!cancelled) {
-        setPdfGlossaryHits([]);
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const viewport = page.getViewport({ scale: pdfZoom * dpr });
+        const displayViewport = page.getViewport({ scale: pdfZoom });
+
+        const offscreen = document.createElement('canvas');
+        offscreen.width = Math.max(1, Math.floor(viewport.width));
+        offscreen.height = Math.max(1, Math.floor(viewport.height));
+
+        const task = page.render({ canvas: offscreen, viewport });
+        activeTask = task;
+        renderTaskRef.current = task;
+        await task.promise;
+        if (cancelled) return;
+
+        const visible = canvasRef.current;
+        if (!visible) return;
+        visible.width = offscreen.width;
+        visible.height = offscreen.height;
+        visible.style.width = `${Math.max(1, Math.floor(displayViewport.width))}px`;
+        visible.style.height = `${Math.max(1, Math.floor(displayViewport.height))}px`;
+
+        const visibleCtx = visible.getContext('2d');
+        if (visibleCtx) {
+          visibleCtx.clearRect(0, 0, visible.width, visible.height);
+          visibleCtx.drawImage(offscreen, 0, 0);
+        }
+      } catch (err) {
+        if (cancelled) return;
+        const name = err instanceof Error ? err.name : '';
+        if (name !== 'RenderingCancelledException') {
+          setLoadError(
+            err instanceof Error ? `No se pudo renderizar esta página: ${err.message}` : 'No se pudo mostrar esta página.'
+          );
+        }
       }
     }
 
     renderPdfPage();
     return () => {
       cancelled = true;
+      if (activeTask) {
+        try {
+          activeTask.cancel();
+        } catch {
+          // ignore
+        }
+      }
     };
-  }, [book.format, loading, location, pdfZoom, glossaryMarksOn, glossary]);
+  }, [book.id, book.format, loading, pdfDocVersion, location, pdfZoom]);
+
+  // Separate effect for PDF Glossary underlines so glossary updates never cancel/blank the PDF canvas!
+  useEffect(() => {
+    if (book.format !== 'pdf' || loading || pdfDocVersion === 0 || !pdfDocRef.current) return;
+    if (!glossaryMarksOn) {
+      setPdfGlossaryHits([]);
+      return;
+    }
+
+    let cancelled = false;
+    async function detectGlossaryHits() {
+      const pdfDoc = pdfDocRef.current;
+      if (!pdfDoc) return;
+      try {
+        const safePage = Math.max(1, Math.min(pdfDoc.numPages, location));
+        const page = await pdfDoc.getPage(safePage);
+        if (cancelled) return;
+        const hits = await extractPdfGlossaryHits(page, glossary);
+        if (!cancelled) setPdfGlossaryHits(hits);
+      } catch {
+        // Non-fatal
+      }
+    }
+
+    detectGlossaryHits();
+    return () => {
+      cancelled = true;
+    };
+  }, [book.id, book.format, loading, pdfDocVersion, location, glossaryMarksOn, glossary]);
 
   // Persist reading progress automatically
   useEffect(() => {

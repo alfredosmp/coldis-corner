@@ -10,6 +10,17 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 export { pdfjsLib };
 
+/**
+ * Safely converts an ArrayBuffer or Uint8Array stored in IndexedDB into a fresh Uint8Array copy
+ * so PDF.js worker transfer never detaches the original buffer.
+ */
+export function toFreshUint8Array(raw: ArrayBuffer | Uint8Array): Uint8Array {
+  if (raw instanceof Uint8Array) {
+    return new Uint8Array(raw);
+  }
+  return new Uint8Array(raw.slice(0));
+}
+
 export interface ParsedSection {
   location: number;
   title: string;
@@ -324,10 +335,8 @@ async function generatePdfThumbnail(pdfDoc: pdfjsLib.PDFDocumentProxy): Promise<
     const canvas = document.createElement('canvas');
     canvas.width = Math.round(scaled.width);
     canvas.height = Math.round(scaled.height);
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return undefined;
 
-    await page.render({ canvas, canvasContext: ctx, viewport: scaled }).promise;
+    await page.render({ canvas, viewport: scaled }).promise;
     return canvas.toDataURL('image/jpeg', 0.72);
   } catch {
     return undefined;
@@ -350,7 +359,10 @@ export async function parseAndIndexDocument(
 
   if (format === 'pdf') {
     onProgress?.(12, 'Abriendo PDF...');
-    const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer.slice(0)) });
+    const loadingTask = pdfjsLib.getDocument({
+      data: toFreshUint8Array(arrayBuffer),
+      useSystemFonts: true,
+    });
     const pdfDoc = await loadingTask.promise;
 
     let suggestedTitle = fallbackTitle;
