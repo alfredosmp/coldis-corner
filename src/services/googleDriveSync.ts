@@ -311,7 +311,10 @@ export async function connectGoogleDrive(): Promise<GoogleDriveSession | null> {
   }
 
   // Mobile / Web PWA flow: PKCE redirect (or implicit token fallback if no client_secret)
-  const redirectUri = `${window.location.origin}${window.location.pathname}`;
+  const cleanPath = window.location.pathname.endsWith('/')
+    ? window.location.pathname
+    : `${window.location.pathname}/`;
+  const redirectUri = `${window.location.origin}${cleanPath}`;
   sessionStorage.setItem(PKCE_VERIFIER_KEY, verifier);
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -343,7 +346,10 @@ export async function completeWebOAuthIfPresent(): Promise<GoogleDriveSession | 
   if (code) {
     const verifier = sessionStorage.getItem(PKCE_VERIFIER_KEY) || '';
     sessionStorage.removeItem(PKCE_VERIFIER_KEY);
-    const redirectUri = `${window.location.origin}${window.location.pathname}`;
+    const cleanPath = window.location.pathname.endsWith('/')
+      ? window.location.pathname
+      : `${window.location.pathname}/`;
+    const redirectUri = `${window.location.origin}${cleanPath}`;
     window.history.replaceState({}, document.title, redirectUri);
 
     const config = getGoogleDriveConfig();
