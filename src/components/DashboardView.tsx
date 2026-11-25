@@ -1,16 +1,12 @@
 import {
   ArrowRight,
   BellRing,
-  BookMarked,
   BookOpen,
   Check,
   Clock,
   GraduationCap,
-  ListTodo,
   PenLine,
   Plus,
-  Search,
-  Sparkles,
   Star,
 } from 'lucide-react';
 import { BRAND_CONFIG, getPersonalSubtitle } from '../config/brand';
@@ -88,49 +84,6 @@ export function DashboardView({
 
   return (
     <div className="space-y-5 pb-8">
-      {/* Compact quick bar shown ONLY on mobile (desktop uses left sidebar) */}
-      <div className="md:hidden flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-2xl bg-white/85 dark:bg-midnight-900/85 border border-lavender-200/75 dark:border-midnight-700/75">
-        <div className="flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-lavender-100/90 dark:bg-midnight-800 text-accent dark:text-lavender-300 font-semibold">
-            <Sparkles className="w-3 h-3" />
-            {settings.currentSemesterLabel}
-          </span>
-          {pendingTasks.length > 0 && (
-            <button
-              onClick={() => onNavigate('calendar')}
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[#5E4A78] dark:text-[#C5B5DA] font-medium"
-            >
-              <ListTodo className="w-3.5 h-3.5 text-blush-500 dark:text-blush-300" />
-              <span>{pendingTasks.length}</span>
-            </button>
-          )}
-        </div>
-
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => onNavigate('search')}
-            className="p-2 rounded-xl text-accent dark:text-lavender-300 bg-lavender-50 dark:bg-midnight-800"
-            aria-label="Buscador"
-          >
-            <Search className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => onNavigate('library')}
-            className="p-2 rounded-xl text-accent dark:text-lavender-300 bg-lavender-50 dark:bg-midnight-800"
-            aria-label="Biblioteca"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={() => onNavigate('glossary')}
-            className="p-2 rounded-xl text-accent dark:text-lavender-300 bg-lavender-50 dark:bg-midnight-800"
-            aria-label="Glosario"
-          >
-            <BookMarked className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
       {/* Priority <24h Exam Direct Study Shortcut Card */}
       {urgentWithin24h.length > 0 && (
         <section className="rounded-3xl p-5 bg-gradient-to-r from-blush-100/90 via-white to-lavender-100/90 dark:from-[#3A1E36] dark:via-midnight-900 dark:to-[#2B1F40] border border-blush-300/80 dark:border-blush-700/60 shadow-soft space-y-3">

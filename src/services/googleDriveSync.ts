@@ -22,6 +22,9 @@ const DRIVE_BOOKS_SUBFOLDER = 'books';
 const DRIVE_STATE_FILENAME = 'state.json';
 const DRIVE_SCOPE =
   'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email';
+// Public OAuth Client ID (safe for client-side PWA; client_secret stays strictly local in .env)
+const DEFAULT_PUBLIC_CLIENT_ID =
+  '152833242613-mduinf8mgojvplme8ng8lhg6lsljm86v.apps.googleusercontent.com';
 
 export interface GoogleDriveSession {
   accessToken: string;
@@ -77,7 +80,11 @@ export function getGoogleDriveConfig(): GoogleDriveConfig {
   } catch {
     // ignore
   }
-  const clientId = (stored.clientId || import.meta.env.VITE_GOOGLE_CLIENT_ID || '').trim();
+  const clientId = (
+    stored.clientId ||
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+    DEFAULT_PUBLIC_CLIENT_ID
+  ).trim();
   const clientSecret = (
     stored.clientSecret ||
     import.meta.env.VITE_GOOGLE_CLIENT_SECRET ||
