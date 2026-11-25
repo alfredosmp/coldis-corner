@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Coldi's Corner — Guía de Instalación para Mafecita</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 14mm 16mm;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #2E1F3E;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+      line-height: 1.48;
+      font-size: 13px;
+    }
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px 22px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #F4ECFD 0%, #FFF7FB 100%);
+      border: 1.5px solid #DEC8FA;
+      margin-bottom: 18px;
+    }
+    .hero img {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .hero h1 {
+      margin: 0 0 4px;
+      font-size: 23px;
+      color: #2E1F3E;
+      letter-spacing: -0.3px;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 13px;
+      color: #6B5587;
+    }
+    .section {
+      border: 1.5px solid #E9DDFB;
+      border-radius: 18px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      background: #FCF9FF;
+      page-break-inside: avoid;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #6D3CC9;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #8B5CF6;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 7px;
+    }
+    li:last-child {
+      margin-bottom: 0;
+    }
+    .pill {
+      display: inline-block;
+      background: #EFE4FD;
+      color: #5B21B6;
+      font-weight: 700;
+      padding: 1px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .link-box {
+      display: inline-block;
+      margin: 4px 0;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: #FFFFFF;
+      border: 1.5px dashed #B794F4;
+      color: #6D28D9;
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .tip {
+      margin-top: 8px;
+      padding: 9px 12px;
+      border-radius: 12px;
+      background: #FFF2F8;
+      border: 1px solid #F7C6DE;
+      color: #6B3653;
+      font-size: 12px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 11.5px;
+      color: #8873A3;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <img src="../public/icon-512.png" alt="Coldi" />
+    <div>
+      <h1>Coldi's Corner — Guía de Instalación</h1>
+      <p>¡Hola, Mafecita! Sigue estos pasos rápidos para instalar tu app en tu laptop (Windows 11) y tenerla también en tu celular con todo sincronizado.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="badge">1</span> Instalar en tu laptop (Windows 11)</h2>
+    <ol>
+      <li>Abre con doble clic el instalador <span class="pill">Coldis-Corner-Setup-1.0.0.exe</span>.</li>
+      <li>Si aparece una ventana azul de <strong>«Windows protegió su PC»</strong>, no te asustes (sale siempre en apps privadas nuevas): haz clic en <span class="pill">Más información</span> y luego en <span class="pill">Ejecutar de todas formas</span>.</li>
+      <li>En la pantalla <strong>«¿Para quién se instalará esta aplicación?»</strong>, deja seleccionada la opción <span class="pill">Solo para mí</span> y haz clic en <span class="pill">Siguiente &gt;</span>.</li>
+      <li>En la pantalla <strong>«Elegir lugar de instalación»</strong>, deja la carpeta que aparece por defecto y haz clic en <span class="pill">Instalar</span>.</li>
+      <li>Cuando termine la barra verde, presiona <span class="pill">Terminar</span>. ¡Listo! Coldi's Corner se abrirá sola y te dejará el ícono de Coldi en tu Escritorio y Menú Inicio. Funciona <strong>100% sin internet</strong>.</li>
+    </ol>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="badge">2</span> Conectar tu Google Drive (solo se hace 1 vez)</h2>
+    <ol>
+      <li>Dentro de Coldi's Corner, entra a <span class="pill">Ajustes</span> (abajo en el menú izquierdo) y baja hasta <strong>Respaldo Local y Google Drive</strong>.</li>
+      <li>Haz clic en <span class="pill">Conectar con Google Drive</span> y elige tu cuenta de Google en el navegador.</li>
+      <li>Si Google muestra el aviso <strong>«Google no verificó esta app»</strong>: haz clic en <span class="pill">Configuración avanzada</span> → <span class="pill">Ir a Coldi's Corner (no seguro)</span> → <span class="pill">Continuar / Permitir</span>.</li>
+      <li>¡Listo! Ya nunca tendrás que volver a iniciar sesión en tu laptop. Todos tus libros, apuntes, flashcards, calendario y materias se respaldan solos en una carpeta llamada <strong>Coldi's Corner</strong> dentro de tu Drive.</li>
+    </ol>
+    <div class="tip">
+      <strong>Privacidad:</strong> La app únicamente puede ver su propia carpeta <em>Coldi's Corner</em>; jamás toca tus fotos ni otros archivos personales de tu Drive.
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="badge">3</span> Agregarla a tu celular (como app sin internet)</h2>
+    <ol>
+      <li>Abre este enlace desde el navegador de tu celular:<br/>
+        <span class="link-box">https://alfredosmp.github.io/coldis-corner/</span>
+      </li>
+      <li>Guárdala como app con el ícono de Coldi en tu pantalla principal:
+        <br/>• <strong>Android (Chrome):</strong> menú <span class="pill">⋮</span> (arriba a la derecha) → <span class="pill">Agregar a pantalla principal</span> o <span class="pill">Instalar aplicación</span>.
+        <br/>• <strong>iPhone (Safari):</strong> botón <strong>Compartir</strong> (abajo al centro) → <span class="pill">Agregar a inicio</span>.
+      </li>
+      <li>Abre la app desde el ícono de Coldi, ve a <span class="pill">Ajustes</span> → <span class="pill">Conectar con Google Drive</span> con tu misma cuenta y en segundos aparecerán todas tus materias, libros, apuntes, calendario y flashcards — disponibles incluso sin internet.</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    Hecho con cariño para Mafecita · Coldi's Corner 💜🐧
+  </div>
+</body>
+</html>
