@@ -15,7 +15,7 @@
   },
   "build": {
     "appId": "com.coldiscorner.app",
-    "productName": "Coldi's Corner",
+    "productName": "Coldis Corner",
     "publish": [
       {
         "provider": "github",
@@ -42,6 +42,7 @@
           ]
         }
       ],
+      "executableName": "ColdisCorner",
       "icon": "build/icon.ico",
       "artifactName": "Coldis-Corner-Setup-${version}.exe"
     },
@@ -53,7 +54,6 @@
       "createStartMenuShortcut": true,
       "shortcutName": "Coldi's Corner",
       "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico",
       "installerLanguages": [
         "es_ES",
         "en_US"
