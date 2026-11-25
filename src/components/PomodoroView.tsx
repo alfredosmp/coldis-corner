@@ -40,7 +40,6 @@ interface PomodoroViewProps {
   customTrackPlaying: boolean;
   onToggleRun: () => void;
   onReset: () => void;
-  onSwitchPhase: (phase: PomodoroPhase) => void;
   onApplyPreset: (focusMin: number, breakMin: number) => void;
   onSelectSubject: (subjectId: string) => void;
   onSetChannelVolume: (id: AmbientChannelId, volume: number) => void;
@@ -76,7 +75,6 @@ export function PomodoroView({
   customTrackPlaying,
   onToggleRun,
   onReset,
-  onSwitchPhase,
   onApplyPreset,
   onSelectSubject,
   onSetChannelVolume,
@@ -126,28 +124,30 @@ export function PomodoroView({
         {/* Pomodoro Timer Card */}
         <section className="xl:col-span-6 rounded-3xl p-6 sm:p-7 bg-white dark:bg-midnight-900 border border-lavender-200/80 dark:border-midnight-700 shadow-soft flex flex-col justify-between gap-6">
           <div className="flex items-center justify-between gap-2">
-            <div className="inline-flex p-1 rounded-2xl bg-lavender-50 dark:bg-midnight-850 border border-lavender-200/80 dark:border-midnight-700">
-              <button
-                onClick={() => onSwitchPhase('focus')}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  state.phase === 'focus'
-                    ? 'bg-accent text-white shadow-sm'
-                    : 'text-[#6D588A] dark:text-[#B9A7D1]'
-                }`}
-              >
-                Enfoque
-              </button>
-              <button
-                onClick={() => onSwitchPhase('break')}
-                className={`inline-flex items-center gap-1 px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  state.phase === 'break'
-                    ? 'bg-blush-500 text-white shadow-sm'
-                    : 'text-[#6D588A] dark:text-[#B9A7D1]'
-                }`}
-              >
-                <Coffee className="w-3.5 h-3.5" />
-                <span>Descanso</span>
-              </button>
+            {/* Automatic Phase Status Indicator (non-clickable; switches smoothly between Enfoque & Descanso) */}
+            <div
+              className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl text-xs font-bold shadow-sm transition-all duration-500 ${
+                state.phase === 'focus'
+                  ? 'bg-accent text-white'
+                  : 'bg-blush-500 text-white'
+              }`}
+              aria-live="polite"
+            >
+              {state.phase === 'focus' ? (
+                <>
+                  <span
+                    className={`w-2 h-2 rounded-full bg-white ${
+                      state.running ? 'animate-pulse' : 'opacity-70'
+                    }`}
+                  />
+                  <span>Enfoque</span>
+                </>
+              ) : (
+                <>
+                  <Coffee className="w-3.5 h-3.5" />
+                  <span>Descanso</span>
+                </>
+              )}
             </div>
 
             <div className="inline-flex items-center gap-1">

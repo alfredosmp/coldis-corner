@@ -11,7 +11,7 @@ import { FloatingPomodoroBar } from './components/FloatingPomodoroBar';
 import { GlossaryView } from './components/GlossaryView';
 import { LibraryView } from './components/LibraryView';
 import { NotesOutlinesView } from './components/NotesOutlinesView';
-import { PomodoroView, type PomodoroPhase, type PomodoroState } from './components/PomodoroView';
+import { PomodoroView, type PomodoroState } from './components/PomodoroView';
 import { SearchView } from './components/SearchView';
 import { SettingsView } from './components/SettingsView';
 import { Sidebar } from './components/Sidebar';
@@ -314,7 +314,7 @@ export function App() {
             ...prev,
             phase: 'break',
             secondsLeft: prev.breakMinutes * 60,
-            running: false,
+            running: true,
           };
         }
 
@@ -322,7 +322,7 @@ export function App() {
           ...prev,
           phase: 'focus',
           secondsLeft: prev.focusMinutes * 60,
-          running: false,
+          running: true,
         };
       });
     }, 1000);
@@ -953,25 +953,19 @@ export function App() {
                   onReset={() =>
                     setPomodoro((p) => ({
                       ...p,
+                      phase: 'focus',
                       running: false,
-                      secondsLeft: (p.phase === 'focus' ? p.focusMinutes : p.breakMinutes) * 60,
-                    }))
-                  }
-                  onSwitchPhase={(phase: PomodoroPhase) =>
-                    setPomodoro((p) => ({
-                      ...p,
-                      phase,
-                      running: false,
-                      secondsLeft: (phase === 'focus' ? p.focusMinutes : p.breakMinutes) * 60,
+                      secondsLeft: p.focusMinutes * 60,
                     }))
                   }
                   onApplyPreset={(focusMinutes, breakMinutes) =>
                     setPomodoro((p) => ({
                       ...p,
+                      phase: 'focus',
                       focusMinutes,
                       breakMinutes,
                       running: false,
-                      secondsLeft: (p.phase === 'focus' ? focusMinutes : breakMinutes) * 60,
+                      secondsLeft: focusMinutes * 60,
                     }))
                   }
                   onSelectSubject={(subjectId) => setPomodoro((p) => ({ ...p, subjectId }))}
