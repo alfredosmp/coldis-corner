@@ -1,0 +1,88 @@
+{
+  "name": "coldi-derecho",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Coldi's Corner — Biblioteca digital, apuntes, flashcards, calendario y glosario de estudio",
+  "author": "Coldi's Corner",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "electron:start": "electron .",
+    "build:win": "npm run build && electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.coldiscorner.app",
+    "productName": "Coldi's Corner",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "alfredosmp",
+        "repo": "coldis-corner"
+      }
+    ],
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "build/icon.ico",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "Coldis-Corner-Setup-${version}.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Coldi's Corner",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerLanguages": [
+        "es_ES",
+        "en_US"
+      ],
+      "language": "1034"
+    }
+  },
+  "dependencies": {
+    "dexie": "^4.0.11",
+    "dexie-react-hooks": "^1.1.7",
+    "electron-updater": "^6.8.11",
+    "jszip": "^3.10.2",
+    "lucide-react": "^0.475.0",
+    "mammoth": "^1.13.0",
+    "pdfjs-dist": "^6.5.438",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "electron": "^40.0.0",
+    "electron-builder": "^26.0.12",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "~5.7.2",
+    "vite": "^6.1.0",
+    "vite-plugin-pwa": "^1.0.0"
+  }
+}
