@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import {
   BookMarked,
   BookOpen,
@@ -67,7 +68,15 @@ export function Sidebar({
   onToggleCollapsed,
   hasExamAlert = false,
 }: SidebarProps) {
-  const mobileItems = NAV_ITEMS.filter((i) => i.mobilePrimary);
+  const activeMobileBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    activeMobileBtnRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      inline: 'center',
+      block: 'nearest',
+    });
+  }, [activeSection]);
 
   return (
     <>
@@ -240,30 +249,33 @@ export function Sidebar({
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-midnight-900/95 backdrop-blur-md border-t border-lavender-200/80 dark:border-midnight-700/80 px-2 py-1.5 flex items-center justify-around shadow-soft-lg">
-        {mobileItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeSection === item.id;
-          const showAlertDot = item.id === 'calendar' && hasExamAlert;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onSelectSection(item.id)}
-              className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl transition-all ${
-                isActive
-                  ? 'text-accent dark:text-lavender-300 bg-lavender-100/80 dark:bg-midnight-800 font-semibold'
-                  : 'text-[#7E6B96] dark:text-[#9C88B6]'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px]">{item.shortLabel}</span>
-              {showAlertDot && (
-                <span className="absolute top-1 right-2.5 w-2 h-2 rounded-full bg-blush-500" />
-              )}
-            </button>
-          );
-        })}
+      {/* Mobile Bottom Navigation (all sections in same order as desktop, swipeable horizontally) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-midnight-900/95 backdrop-blur-md border-t border-lavender-200/80 dark:border-midnight-700/80 shadow-soft-lg">
+        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar px-2 py-1.5 snap-x">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            const showAlertDot = item.id === 'calendar' && hasExamAlert;
+            return (
+              <button
+                key={item.id}
+                ref={isActive ? activeMobileBtnRef : null}
+                onClick={() => onSelectSection(item.id)}
+                className={`relative shrink-0 min-w-[64px] snap-center flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-2xl transition-all ${
+                  isActive
+                    ? 'text-accent dark:text-lavender-300 bg-lavender-100/85 dark:bg-midnight-800 font-semibold'
+                    : 'text-[#7E6B96] dark:text-[#9C88B6]'
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="text-[10px] leading-tight whitespace-nowrap">{item.shortLabel}</span>
+                {showAlertDot && (
+                  <span className="absolute top-1 right-2.5 w-2 h-2 rounded-full bg-blush-500" />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </nav>
     </>
   );
